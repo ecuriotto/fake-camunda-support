@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="715fffd" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.6.0">
+  <bpmn:process id="Customer-support" name="Customer-support" isExecutable="true">
+    <bpmn:exclusiveGateway id="Gateway_0q4lnzz" name="Automatic email?" default="Flow_0qmd6pm">
+      <bpmn:incoming>Flow_1pk5vvq</bpmn:incoming>
+      <bpmn:outgoing>Flow_1qyk909</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0qmd6pm</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1qyk909" name="yes" sourceRef="Gateway_0q4lnzz" targetRef="Gateway_0608i2m">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=goodForAutomation</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="Gateway_15nketq" name="Which category?" default="Flow_1m831ox">
+      <bpmn:incoming>Flow_1l09vth</bpmn:incoming>
+      <bpmn:outgoing>Flow_0vxruo1</bpmn:outgoing>
+      <bpmn:outgoing>Flow_04v46oe</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1q5uyqg</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1m831ox</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0vxruo1" name="bug" sourceRef="Gateway_15nketq" targetRef="Activity_0ddhnk3">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=inspectInputEmailResponse.category="Bug"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_13sfc4b" sourceRef="Activity_0ddhnk3" targetRef="Activity_1r1wuwe" />
+    <bpmn:exclusiveGateway id="Gateway_0cmzg54">
+      <bpmn:incoming>Flow_0aicg5q</bpmn:incoming>
+      <bpmn:incoming>Flow_0ydivp2</bpmn:incoming>
+      <bpmn:incoming>Flow_0nic38r</bpmn:incoming>
+      <bpmn:incoming>Flow_0uqcu6w</bpmn:incoming>
+      <bpmn:outgoing>Flow_17h4kwz</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_04v46oe" name="howto" sourceRef="Gateway_15nketq" targetRef="Activity_071mdtw">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=inspectInputEmailResponse.category="How to use"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0qmd6pm" name="no" sourceRef="Gateway_0q4lnzz" targetRef="Activity_1w5j3om" />
+    <bpmn:userTask id="Activity_1w5j3om" name="Update automatic email">
+      <bpmn:documentation>The user can update the email and send it</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="update-automatic-email-0vlxy1q" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0qmd6pm</bpmn:incoming>
+      <bpmn:outgoing>Flow_1g2kohl</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_0608i2m">
+      <bpmn:incoming>Flow_1g2kohl</bpmn:incoming>
+      <bpmn:incoming>Flow_1qyk909</bpmn:incoming>
+      <bpmn:outgoing>Flow_011xvn4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1g2kohl" sourceRef="Activity_1w5j3om" targetRef="Gateway_0608i2m" />
+    <bpmn:sequenceFlow id="Flow_011xvn4" sourceRef="Gateway_0608i2m" targetRef="sentAutomaticEmail" />
+    <bpmn:endEvent id="Event_0o3qbqt" name="Reply sent">
+      <bpmn:incoming>Flow_0454m0o</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0454m0o" sourceRef="sentAutomaticEmail" targetRef="Event_0o3qbqt" />
+    <bpmn:sequenceFlow id="Flow_0aicg5q" sourceRef="Activity_071mdtw" targetRef="Gateway_0cmzg54" />
+    <bpmn:sequenceFlow id="Flow_1q5uyqg" name="FR" sourceRef="Gateway_15nketq" targetRef="Activity_0rnahsp">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=inspectInputEmailResponse.category="Feature request"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0ydivp2" sourceRef="Activity_0rnahsp" targetRef="Gateway_0cmzg54" />
+    <bpmn:sequenceFlow id="Flow_1m831ox" name="Generic" sourceRef="Gateway_15nketq" targetRef="Activity_0o5mjtl" />
+    <bpmn:serviceTask id="Activity_071mdtw" name="Find documentation page" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="8" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+      <bpmn:documentation>Camunda documentation website will be queried in order to find the best suitable page.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="GET" target="method" />
+          <zeebe:input source="=GOOGLE_BASE_URL + &#34;?key={{secrets.GOOGLE_KEY}}&#38;cx=150bd744f9ac24055&#38;q=&#34;+inspectInputEmailResponse.mainQuestion" target="url" />
+          <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="20" target="readTimeoutInSeconds" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultExpression" value="={&#10;bodyPlaceholder:response.body.items[1].link +&#34;, &#34;+&#10;response.body.items[2].link+&#34;, &#34;+&#10;response.body.items[3].link,&#10;templateNumber: 4&#10;}" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_04v46oe</bpmn:incoming>
+      <bpmn:outgoing>Flow_0aicg5q</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:scriptTask id="Activity_117qby0" name="Set init var">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=&#34;init vars&#34;" resultVariable="useless" />
+        <zeebe:ioMapping>
+          <zeebe:output source="=&#34;https://search-enrico-opensearch-domain-r26v7nleaw5w5rd4vat5a6uoga.eu-central-1.es.amazonaws.com&#34;" target="OPENSEARCH_URL" />
+          <zeebe:output source="=&#34;https://www.googleapis.com/customsearch/v1&#34;" target="GOOGLE_BASE_URL" />
+          <zeebe:output source="=uuid()" target="ticketNumber" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0fj7ab9</bpmn:incoming>
+      <bpmn:outgoing>Flow_0r4uvwd</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:startEvent id="StartEvent_1" zeebe:modelerTemplate="io.camunda.connectors.inbound.EmailMessageStart.v1" zeebe:modelerTemplateVersion="1" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzkwXzI0MjApIj4KPHBhdGggZD0iTTguMzM4MzUgOS45NTM2NUwxMC4zODk0IDEyLjAxMDRMOC4zMzI2MiAxNC4wNjcyTDkuMTQ2MTYgMTQuODc1TDEyLjAxMDcgMTIuMDEwNEw5LjE0NjE2IDkuMTQ1ODNMOC4zMzgzNSA5Ljk1MzY1WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTEyLjM0ODggOS45NTM2NUwxNC4zOTk4IDEyLjAxMDRMMTIuMzQzIDE0LjA2NzJMMTMuMTU2NiAxNC44NzVMMTYuMDIxMiAxMi4wMTA0TDEzLjE1NjYgOS4xNDU4M0wxMi4zNDg4IDkuOTUzNjVaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNMy45NzIgMTEuNDM3NUgxLjEyNTMzVjIuNzkyMTlMNy42NzM3NiA3LjMyMzk2QzcuNzY5NjcgNy4zOTA0OSA3Ljg4MzYgNy40MjYxNCA4LjAwMDMyIDcuNDI2MTRDOC4xMTcwNSA3LjQyNjE0IDguMjMwOTggNy4zOTA0OSA4LjMyNjg5IDcuMzIzOTZMMTQuODc1MyAyLjc5MjE5VjhIMTYuMDIxMlYyLjI3MDgzQzE2LjAyMTIgMS45NjY5NCAxNS45MDA0IDEuNjc1NDkgMTUuNjg1NiAxLjQ2MDYxQzE1LjQ3MDcgMS4yNDU3MiAxNS4xNzkyIDEuMTI1IDE0Ljg3NTMgMS4xMjVIMS4xMjUzM0MwLjgyMTQzMiAxLjEyNSAwLjUyOTk4NCAxLjI0NTcyIDAuMzE1MDk5IDEuNDYwNjFDMC4xMDAyMTQgMS42NzU0OSAtMC4wMjA1MDc4IDEuOTY2OTQgLTAuMDIwNTA3OCAyLjI3MDgzVjExLjQzNzVDLTAuMDIwNTA3OCAxMS43NDE0IDAuMTAwMjE0IDEyLjAzMjggMC4zMTUwOTkgMTIuMjQ3N0MwLjUyOTk4NCAxMi40NjI2IDAuODIxNDMyIDEyLjU4MzMgMS4xMjUzMyAxMi41ODMzSDMuOTcyVjExLjQzNzVaTTEzLjYxNDkgMi4yNzA4M0w4LjAwMDMyIDYuMTU1MjFMMi4zODU3NCAyLjI3MDgzSDEzLjYxNDlaIiBmaWxsPSIjRkM1RDBEIi8+CjxwYXRoIGQ9Ik00LjI4MjEgOS45NTM2NUw2LjMzMzE0IDEyLjAxMDRMNC4yNzYzNyAxNC4wNjcyTDUuMDg5OTEgMTQuODc1TDcuOTU0NDkgMTIuMDEwNEw1LjA4OTkxIDkuMTQ1ODNMNC4yODIxIDkuOTUzNjVaIiBmaWxsPSJibGFjayIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzkwXzI0MjAiPgo8cmVjdCB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==">
+      <bpmn:extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="inbound.type" value="io.camunda:connector-email-inbound:1" />
+          <zeebe:property name="authentication.type" value="simple" />
+          <zeebe:property name="authentication.username" value="education.camunda.test@gmail.com" />
+          <zeebe:property name="authentication.password" value="{{secrets.GOOGLE_EMAIL_KEY}}" />
+          <zeebe:property name="data.imapConfig.imapHost" value="imap.gmail.com" />
+          <zeebe:property name="data.imapConfig.imapPort" value="993" />
+          <zeebe:property name="data.imapConfig.imapCryptographicProtocol" value="TLS" />
+          <zeebe:property name="data.folderToListen" value="INBOX" />
+          <zeebe:property name="data.pollingWaitTime" value="PT20S" />
+          <zeebe:property name="data.pollingConfigDiscriminator" value="unseenPollingConfig" />
+          <zeebe:property name="data.pollingConfig.handlingStrategy" value="MOVE" />
+          <zeebe:property name="data.pollingConfig.targetFolder" value="processed-by-camunda" />
+          <zeebe:property name="consumeUnmatchedEvents" value="true" />
+          <zeebe:property name="correlationRequired" value="notRequired" />
+          <zeebe:property name="deduplicationModeManualFlag" value="false" />
+          <zeebe:property name="deduplicationMode" value="AUTO" />
+          <zeebe:property name="resultVariable" value="" />
+          <zeebe:property name="resultExpression" value="={inputEmailResponse:{&#10; &#34;from&#34;: response.fromAddress,&#10; &#34;inputEmailTitle&#34;: response.subject,&#10; &#34;inputEmailBody&#34;: response.plainTextBody&#10;}&#10;}" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_0fj7ab9</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0nbrg0j" messageRef="Message_0doo8xv" />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0fj7ab9" sourceRef="StartEvent_1" targetRef="Activity_117qby0" />
+    <bpmn:dataObjectReference id="DataObjectReference_13onmyf" name="Question interpretation accuracy level" dataObjectRef="DataObject_1y9ptq0" />
+    <bpmn:dataObject id="DataObject_1y9ptq0" />
+    <bpmn:dataObjectReference id="DataObjectReference_0gupucw" name="Category" dataObjectRef="DataObject_0shilxj" />
+    <bpmn:dataObject id="DataObject_0shilxj" />
+    <bpmn:dataObjectReference id="DataObjectReference_0c1ydu0" name="Main question" dataObjectRef="DataObject_0oyl3ds" />
+    <bpmn:dataObject id="DataObject_0oyl3ds" />
+    <bpmn:dataObjectReference id="DataObjectReference_14663w1" name="coreAnswer" dataObjectRef="DataObject_0pn5par" />
+    <bpmn:dataObject id="DataObject_0pn5par" />
+    <bpmn:businessRuleTask id="Activity_0fkk3ur" name="Evaluate Answer quality">
+      <bpmn:documentation>It includes the evaluations of the agent and the confidency in evaluating the question as well</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:calledDecision decisionId="evaluate-answer-quality-0yoh4jl" resultVariable="goodForAutomation" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0j77kbi</bpmn:incoming>
+      <bpmn:outgoing>Flow_1pk5vvq</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:serviceTask id="Activity_1qqucqt" name="Inspect input email" zeebe:modelerTemplate="io.camunda.connectors.AzureOpenAI.outbound.v1" zeebe:modelerTemplateVersion="1" zeebe:modelerTemplateIcon="data:image/svg+xml;utf8,%3Csvg xmlns=&#39;http://www.w3.org/2000/svg&#39; width=&#39;16&#39; height=&#39;16&#39; fill=&#39;none&#39; viewBox=&#39;0 0 513 512&#39;%3E%3Cg clip-path=&#39;url(%23a)&#39;%3E%3Crect width=&#39;512&#39; height=&#39;512&#39; x=&#39;.25&#39; fill=&#39;%23fff&#39; rx=&#39;76&#39;/%3E%3Cpath fill=&#39;url(%23b)&#39; d=&#39;M.25 76.8v358.4c0 42.411 34.39 76.8 76.8 76.8h358.4c42.411 0 76.8-34.389 76.8-76.8V76.8c0-42.41-34.389-76.8-76.8-76.8H77.05C34.64 0 .25 34.39.25 76.8ZM307.45 0v102.4c0 113.095 91.705 204.8 204.8 204.8h-102.4c-113.095 0-204.772 91.648-204.8 204.743V409.6c0-113.095-91.705-204.8-204.8-204.8h102.4c113.095 0 204.8-91.705 204.8-204.8Z&#39;/%3E%3C/g%3E%3Cdefs%3E%3CradialGradient id=&#39;b&#39; cx=&#39;0&#39; cy=&#39;0&#39; r=&#39;1&#39; gradientTransform=&#39;rotate(45 -176.261 403.94) scale(321.165 437.107)&#39; gradientUnits=&#39;userSpaceOnUse&#39;%3E%3Cstop stop-color=&#39;%2383B9F9&#39;/%3E%3Cstop offset=&#39;1&#39; stop-color=&#39;%230078D4&#39;/%3E%3C/radialGradient%3E%3CclipPath id=&#39;a&#39;%3E%3Crect width=&#39;512&#39; height=&#39;512&#39; x=&#39;.25&#39; fill=&#39;%23fff&#39; rx=&#39;76&#39;/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="1" />
+        <zeebe:ioMapping>
+          <zeebe:input source="apiKey" target="authentication.type" />
+          <zeebe:input source="headers" target="authentication.apiKeyLocation" />
+          <zeebe:input source="api-key" target="authentication.name" />
+          <zeebe:input source="{{secrets.AZURE_OPENAI_KEY}}" target="authentication.value" />
+          <zeebe:input source="chatCompletion" target="operation" />
+          <zeebe:input source="education-api-services" target="chatCompletion_resourceName" />
+          <zeebe:input source="gpt-4o" target="chatCompletion_deploymentId" />
+          <zeebe:input source="2024-10-21" target="chatCompletion_apiVersion" />
+          <zeebe:input source="user" target="chatCompletion_messageRole" />
+          <zeebe:input source="=&#34;Consider the request for the Camunda customer support hereafter and provide a string with four variables: category (can be &#39;Bug&#39;,&#39;How to use&#39;, &#39;Feature request&#39;), questionInterpretationAccuracy (how confident you are between 0 and 1 that you could categorize the question correctly), mainQuestion (a short summary of the question, 10% of characters of the original question), customerAngry (decimal between 0 low and 1 high) For example: category:Bug,questionInterpretationAccuracy:0.95,mainQuestion:Process deployment doesn&#39;t work,customerAngry:0.2\n REQUEST-TITLE&#34; + inputEmailResponse.inputEmailTitle + &#34; REQUEST-BODY&#34; + inputEmailResponse.inputEmailBody " target="chatCompletion_messageContent" />
+          <zeebe:input source="0.8" target="chatCompletion_temperature" />
+          <zeebe:input source="1" target="chatCompletion_n" />
+          <zeebe:input source="False" target="chatCompletion_stream" />
+          <zeebe:input source="post" target="method" />
+          <zeebe:input source="=&#34;https://&#34; + chatCompletion_resourceName + &#34;.openai.azure.com/openai/deployments/&#34; + chatCompletion_deploymentId + &#34;/chat/completions?api-version=&#34; + chatCompletion_apiVersion" target="url" />
+          <zeebe:input source="=context(get entries({&#34;messages&#34;: if chatCompletion_messages = null then [{&#34;role&#34;: chatCompletion_messageRole, &#34;content&#34;: chatCompletion_messageContent}] else append(chatCompletion_messages, {&#34;role&#34;: chatCompletion_messageRole, &#34;content&#34;: chatCompletion_messageContent}), &#34;contentPart&#34;: if chatCompletion_contentPart = null then null else chatCompletion_contentPart, &#34;enhancements&#34;: if chatCompletion_enhancements = null then null else chatCompletion_enhancements, &#34;dataSources&#34;: if chatCompletion_dataSources = null then null else chatCompletion_dataSources, &#34;temperature&#34;: if chatCompletion_temperature = null then null else number(chatCompletion_temperature), &#34;n&#34;: if chatCompletion_n = null then null else decimal(number(chatCompletion_n), 0), &#34;stream&#34;: chatCompletion_stream = &#34;True&#34;, &#34;stop&#34;: if chatCompletion_stop = null then null else chatCompletion_stop, &#34;max_tokens&#34;: if chatCompletion_maxTokens = null then null else decimal(number(chatCompletion_maxTokens), 0), &#34;presence_penalty&#34;: if chatCompletion_presencePenalty = null then null else number(chatCompletion_presencePenalty), &#34;frequency_penalty&#34;: if chatCompletion_frequencyPenalty = null then null else number(chatCompletion_frequencyPenalty), &#34;logit_bias&#34;: if chatCompletion_logitBias = null then null else chatCompletion_logitBias, &#34;user&#34;: if chatCompletion_user = null then null else chatCompletion_user, &#34;tools&#34;: if chatCompletion_tools = null then null else chatCompletion_tools})[item.value != null])" target="body" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultExpression" value="={&#10;  inspectInputEmailResponse:&#10;  {&#10;    openAiSortResponse: response.body,&#10;    responseInspectInputEmail: response.body.choices[1].message.content,&#10;    splittedInput: split(responseInspectInputEmail, &#34;,&#34;),&#10;    category: split(splittedInput[1],&#34;:&#34;)[2],&#10;    interpretationAccuracy: number(split(splittedInput[2],&#34;:&#34;)[2]),&#10;    mainQuestion: split(splittedInput[3],&#34;:&#34;)[2],&#10;    customerAngry: number(split(splittedInput[4],&#34;:&#34;)[2])&#10;  }&#10;}" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0r4uvwd</bpmn:incoming>
+      <bpmn:outgoing>Flow_1l09vth</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_0m9dssp">
+        <bpmn:targetRef>DataObjectReference_0gupucw</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_0384wys">
+        <bpmn:targetRef>DataObjectReference_13onmyf</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_1r77jnm">
+        <bpmn:targetRef>DataObjectReference_0c1ydu0</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_1iaye7b">
+        <bpmn:targetRef>DataObjectReference_1ga4cqi</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0r4uvwd" sourceRef="Activity_117qby0" targetRef="Activity_1qqucqt" />
+    <bpmn:sequenceFlow id="Flow_1l09vth" sourceRef="Activity_1qqucqt" targetRef="Gateway_15nketq" />
+    <bpmn:dataObjectReference id="DataObjectReference_1ga4cqi" name="Customer angry" dataObjectRef="DataObject_1q9otzm" />
+    <bpmn:dataObject id="DataObject_1q9otzm" />
+    <bpmn:sequenceFlow id="Flow_17h4kwz" sourceRef="Gateway_0cmzg54" targetRef="Activity_0myermz" />
+    <bpmn:sequenceFlow id="Flow_1cahe6c" sourceRef="Activity_0myermz" targetRef="Activity_0t84vqq" />
+    <bpmn:sequenceFlow id="Flow_0b7kase" sourceRef="Activity_0t84vqq" targetRef="Activity_1krn6ih" />
+    <bpmn:serviceTask id="Activity_0ddhnk3" name="Search KB" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="8" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+      <bpmn:documentation>Query to retrieve the KB from Open Search</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="basic" target="authentication.type" />
+          <zeebe:input source="demo" target="authentication.username" />
+          <zeebe:input source="{{secrets.OPENSEARCH_PASSWORD}}" target="authentication.password" />
+          <zeebe:input source="POST" target="method" />
+          <zeebe:input source="=OPENSEARCH_URL + &#34;/tickets/_search?pretty=true&#34;" target="url" />
+          <zeebe:input source="={&#10;  Content-Type: &#34;application/json&#34;&#10;}" target="headers" />
+          <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="20" target="readTimeoutInSeconds" />
+          <zeebe:input source="={&#10;  &#34;query&#34;: {&#10;    &#34;multi_match&#34;: {&#10;      &#34;query&#34;: inspectInputEmailResponse.mainQuestion,&#10;      &#34;fields&#34;: [&#34;title&#34;]&#10;    }&#10;  }&#10;}" target="body" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultExpression" value="={&#10; &#34;searchKbResponse&#34;: {&#10;   &#34;score&#34;: response.body.hits.hits[1]._score,&#10;   &#34;question&#34;: response.body.hits.hits[1]._source.title,&#10;   &#34;url&#34;: response.body.hits.hits[1]._source.url,&#10;   &#34;creationDate&#34;: response.body.hits.hits[1]._source.creationDate&#10; },&#10;  bodyPlaceholder: response.body.hits.hits[1]._source.url&#10;}" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0vxruo1</bpmn:incoming>
+      <bpmn:outgoing>Flow_13sfc4b</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_0myermz" name="Get email template from db" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="8" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+      <bpmn:documentation>Query to retrieve the email template from Open Search</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="basic" target="authentication.type" />
+          <zeebe:input source="demo" target="authentication.username" />
+          <zeebe:input source="{{secrets.OPENSEARCH_PASSWORD}}" target="authentication.password" />
+          <zeebe:input source="POST" target="method" />
+          <zeebe:input source="=OPENSEARCH_URL + &#34;/templates/_search?pretty=true&#34;" target="url" />
+          <zeebe:input source="={&#10;  Content-Type: &#34;application/json&#34;&#10;}" target="headers" />
+          <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="20" target="readTimeoutInSeconds" />
+          <zeebe:input source="={&#10;  &#34;query&#34;: {&#10;    &#34;term&#34;: {&#10;      &#34;id&#34;: {&#10;        &#34;value&#34;: templateNumber&#10;      }&#10;    }&#10;  }&#10;}" target="body" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultVariable" />
+          <zeebe:header key="resultExpression" value="={getEmailTemplateResponse:&#10; {&#10;  subject: response.body.hits.hits[1]._source.subject,&#10;  body: response.body.hits.hits[1]._source.body&#10; }&#10;}" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_17h4kwz</bpmn:incoming>
+      <bpmn:outgoing>Flow_1cahe6c</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:scriptTask id="Activity_0rnahsp" name="Generate Feature request message">
+      <bpmn:documentation>Standard message is generated to indicate that a Feature request will be opened</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:script expression="=5" resultVariable="templateNumber" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1q5uyqg</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ydivp2</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_0nic38r" sourceRef="Activity_1r1wuwe" targetRef="Gateway_0cmzg54" />
+    <bpmn:scriptTask id="Activity_1r1wuwe" name="Define template number">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=if searchKbResponse.score &#62; 15 then 2 else 3" resultVariable="templateNumber" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_13sfc4b</bpmn:incoming>
+      <bpmn:outgoing>Flow_0nic38r</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="Activity_0t84vqq" name="Write email">
+      <bpmn:documentation>Integrate the proposed email message with the template</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:script expression="={subject:{&#10;  &#34;searchString&#34;: &#34;{{ticketNumber}}&#34;,&#10;  &#34;partBefore&#34;: substring before(getEmailTemplateResponse.subject, searchString),&#10;  &#34;partAfter&#34;: substring after(getEmailTemplateResponse.subject, searchString),&#10;  &#34;result&#34;: if(partBefore)!=&#34;&#34; then partBefore + ticketNumber + partAfter else getEmailTemplateResponse.subject&#10;}.result,&#10;body:{&#10;  &#34;searchString&#34;: &#34;{{bodyPlaceholder}}&#34;,&#10;  &#34;partBefore&#34;: substring before(getEmailTemplateResponse.body, searchString),&#10;  &#34;partAfter&#34;: substring after(getEmailTemplateResponse.body, searchString),&#10;  &#34;result&#34;: if(partBefore)!=&#34;&#34; then partBefore + bodyPlaceholder + partAfter else getEmailTemplateResponse.body&#10;}.result}" resultVariable="outputEmail" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1cahe6c</bpmn:incoming>
+      <bpmn:outgoing>Flow_0b7kase</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="Activity_0o5mjtl" name="Generate generic message">
+      <bpmn:documentation>Standard message is generated to indicate that a Feature request will be opened</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:script expression="=6" resultVariable="templateNumber" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1m831ox</bpmn:incoming>
+      <bpmn:outgoing>Flow_0uqcu6w</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_0uqcu6w" sourceRef="Activity_0o5mjtl" targetRef="Gateway_0cmzg54" />
+    <bpmn:sequenceFlow id="Flow_1pk5vvq" sourceRef="Activity_0fkk3ur" targetRef="Gateway_0q4lnzz" />
+    <bpmn:serviceTask id="Activity_1krn6ih" name="Agent evaluates the answer" zeebe:modelerTemplate="io.camunda.connectors.AzureOpenAI.outbound.v1" zeebe:modelerTemplateVersion="1" zeebe:modelerTemplateIcon="data:image/svg+xml;utf8,%3Csvg xmlns=&#39;http://www.w3.org/2000/svg&#39; width=&#39;16&#39; height=&#39;16&#39; fill=&#39;none&#39; viewBox=&#39;0 0 513 512&#39;%3E%3Cg clip-path=&#39;url(%23a)&#39;%3E%3Crect width=&#39;512&#39; height=&#39;512&#39; x=&#39;.25&#39; fill=&#39;%23fff&#39; rx=&#39;76&#39;/%3E%3Cpath fill=&#39;url(%23b)&#39; d=&#39;M.25 76.8v358.4c0 42.411 34.39 76.8 76.8 76.8h358.4c42.411 0 76.8-34.389 76.8-76.8V76.8c0-42.41-34.389-76.8-76.8-76.8H77.05C34.64 0 .25 34.39.25 76.8ZM307.45 0v102.4c0 113.095 91.705 204.8 204.8 204.8h-102.4c-113.095 0-204.772 91.648-204.8 204.743V409.6c0-113.095-91.705-204.8-204.8-204.8h102.4c113.095 0 204.8-91.705 204.8-204.8Z&#39;/%3E%3C/g%3E%3Cdefs%3E%3CradialGradient id=&#39;b&#39; cx=&#39;0&#39; cy=&#39;0&#39; r=&#39;1&#39; gradientTransform=&#39;rotate(45 -176.261 403.94) scale(321.165 437.107)&#39; gradientUnits=&#39;userSpaceOnUse&#39;%3E%3Cstop stop-color=&#39;%2383B9F9&#39;/%3E%3Cstop offset=&#39;1&#39; stop-color=&#39;%230078D4&#39;/%3E%3C/radialGradient%3E%3CclipPath id=&#39;a&#39;%3E%3Crect width=&#39;512&#39; height=&#39;512&#39; x=&#39;.25&#39; fill=&#39;%23fff&#39; rx=&#39;76&#39;/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E">
+      <bpmn:documentation>The system uses an AI agent to evaluate the quality of the coreAnswer against the question</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="1" />
+        <zeebe:ioMapping>
+          <zeebe:input source="apiKey" target="authentication.type" />
+          <zeebe:input source="headers" target="authentication.apiKeyLocation" />
+          <zeebe:input source="api-key" target="authentication.name" />
+          <zeebe:input source="{{secrets.AZURE_OPENAI_KEY}}" target="authentication.value" />
+          <zeebe:input source="chatCompletion" target="operation" />
+          <zeebe:input source="education-api-services" target="chatCompletion_resourceName" />
+          <zeebe:input source="gpt-4o" target="chatCompletion_deploymentId" />
+          <zeebe:input source="2024-10-21" target="chatCompletion_apiVersion" />
+          <zeebe:input source="user" target="chatCompletion_messageRole" />
+          <zeebe:input source="=&#34;You are an agent that has to rate the goodness of an answer given by an automatic system. This is the email in input:\n REQUEST-TITLE &#34; + inputEmailResponse.inputEmailTitle + &#34; REQUEST-BODY &#34; + inputEmailResponse.inputEmailBody +&#34;\n And this is the email in output: RESPONSE-TITLE&#34; + outputEmail.subject + &#34; RESPONSE-BODY &#34; + outputEmail.body + &#34;\nYou need to provide a string with a number variable called agentEstimate between 0 and 10 indicating how pertinent the answer is, and a message indicating your comment. Number and comment are separated with a &#39;;&#39; .Example: 3; The response provided in the email is polite and acknowledges the receipt of the request. However, it lacks specific information or a direct answer to the query about the ability to create worker code in javascript&#34;" target="chatCompletion_messageContent" />
+          <zeebe:input source="0.8" target="chatCompletion_temperature" />
+          <zeebe:input source="1" target="chatCompletion_n" />
+          <zeebe:input source="False" target="chatCompletion_stream" />
+          <zeebe:input source="post" target="method" />
+          <zeebe:input source="=&#34;https://&#34; + chatCompletion_resourceName + &#34;.openai.azure.com/openai/deployments/&#34; + chatCompletion_deploymentId + &#34;/chat/completions?api-version=&#34; + chatCompletion_apiVersion" target="url" />
+          <zeebe:input source="=context(get entries({&#34;messages&#34;: if chatCompletion_messages = null then [{&#34;role&#34;: chatCompletion_messageRole, &#34;content&#34;: chatCompletion_messageContent}] else append(chatCompletion_messages, {&#34;role&#34;: chatCompletion_messageRole, &#34;content&#34;: chatCompletion_messageContent}), &#34;contentPart&#34;: if chatCompletion_contentPart = null then null else chatCompletion_contentPart, &#34;enhancements&#34;: if chatCompletion_enhancements = null then null else chatCompletion_enhancements, &#34;dataSources&#34;: if chatCompletion_dataSources = null then null else chatCompletion_dataSources, &#34;temperature&#34;: if chatCompletion_temperature = null then null else number(chatCompletion_temperature), &#34;n&#34;: if chatCompletion_n = null then null else decimal(number(chatCompletion_n), 0), &#34;stream&#34;: chatCompletion_stream = &#34;True&#34;, &#34;stop&#34;: if chatCompletion_stop = null then null else chatCompletion_stop, &#34;max_tokens&#34;: if chatCompletion_maxTokens = null then null else decimal(number(chatCompletion_maxTokens), 0), &#34;presence_penalty&#34;: if chatCompletion_presencePenalty = null then null else number(chatCompletion_presencePenalty), &#34;frequency_penalty&#34;: if chatCompletion_frequencyPenalty = null then null else number(chatCompletion_frequencyPenalty), &#34;logit_bias&#34;: if chatCompletion_logitBias = null then null else chatCompletion_logitBias, &#34;user&#34;: if chatCompletion_user = null then null else chatCompletion_user, &#34;tools&#34;: if chatCompletion_tools = null then null else chatCompletion_tools})[item.value != null])" target="body" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultVariable" value="agentEvaluatesTheAnswer" />
+          <zeebe:header key="resultExpression" value="={&#10;  agentEvaluatesTheAnswer:&#10;  {&#10;    evaluation: response.body.choices[1].message.content,&#10;    agentEvaluation: number(split(evaluation, &#34;;&#34;)[1]),&#10;    agentComment: split(evaluation, &#34;;&#34;)[2]&#10;  }&#10;}" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0b7kase</bpmn:incoming>
+      <bpmn:outgoing>Flow_0j77kbi</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0j77kbi" sourceRef="Activity_1krn6ih" targetRef="Activity_0fkk3ur" />
+    <bpmn:serviceTask id="sentAutomaticEmail" name="Send answer to requestor" zeebe:modelerTemplate="io.camunda.connectors.SendGrid.v2" zeebe:modelerTemplateVersion="3" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0wLjI4NTcwNiA1LjQwODQ3SDUuNDM4MzdWMTAuNTYxMUgwLjI4NTcwNlY1LjQwODQ3WiIgZmlsbD0id2hpdGUiLz4KICAgIDxwYXRoIGQ9Ik0wLjI4NTcwNiA1LjQwODQ3SDUuNDM4MzdWMTAuNTYxMUgwLjI4NTcwNlY1LjQwODQ3WiIgZmlsbD0iIzk5RTFGNCIvPgogICAgPHBhdGggZD0iTTUuNDM4MzcgMTAuNTYxMUwxMC41NjExIDEwLjU2MTZWMTUuNjg0NEg1LjQzODM3VjEwLjU2MTFaIiBmaWxsPSJ3aGl0ZSIvPgogICAgPHBhdGggZD0iTTUuNDM4MzcgMTAuNTYxMUwxMC41NjExIDEwLjU2MTZWMTUuNjg0NEg1LjQzODM3VjEwLjU2MTFaIiBmaWxsPSIjOTlFMUY0Ii8+CiAgICA8cGF0aCBkPSJNMC4yODU3MDYgMTUuNjg0Nkw1LjQzODM3IDE1LjY4NDRWMTUuNzE0M0gwLjI4NTcwNlYxNS42ODQ2Wk0wLjI4NTcwNiAxMC41NjE5SDUuNDM4MzdWMTUuNjg0NEwwLjI4NTcwNiAxNS42ODQ2VjEwLjU2MTlaIiBmaWxsPSIjMUE4MkUyIi8+CiAgICA8cGF0aCBkPSJNNS40MzgzNyAwLjI4NTcwNkgxMC41NjExVjUuNDA4NDdINS40MzgzN1YwLjI4NTcwNlpNMTAuNTYxNiA1LjQzODM3SDE1LjcxNDNWMTAuNTYxMUgxMC41NjE2VjUuNDM4MzdaIiBmaWxsPSIjMDBCM0UzIi8+CiAgICA8cGF0aCBkPSJNNS40MzgzNyAxMC41NjExTDEwLjU2MTEgMTAuNTYxNlY1LjQwODQ3SDUuNDM4MzdWMTAuNTYxMVoiIGZpbGw9IiMwMDlERDkiLz4KICAgIDxwYXRoIGQ9Ik0xMC41NjExIDAuMjg1NzA2SDE1LjcxNDNWNS40MDg0N0gxMC41NjExVjAuMjg1NzA2WiIgZmlsbD0iIzFBODJFMiIvPgogICAgPHBhdGggZD0iTTEwLjU2MTEgNS40MDg0N0gxNS43MTQzVjUuNDM4MzdIMTAuNTYxNkwxMC41NjExIDUuNDA4NDdaIiBmaWxsPSIjMUE4MkUyIi8+Cjwvc3ZnPg==">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:sendgrid:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="{{secrets.SENDGRID_DEMO}}" target="apiKey" />
+          <zeebe:input source="FakeCamundaSupport" target="from.name" />
+          <zeebe:input source="demo@camunda.com" target="from.email" />
+          <zeebe:input source="Requestor" target="to.name" />
+          <zeebe:input source="=inputEmailResponse.from" target="to.email" />
+          <zeebe:input source="mail" target="unMappedFieldNotUseInModel.mailType" />
+          <zeebe:input source="=outputEmail.subject" target="content.subject" />
+          <zeebe:input source="text/plain" target="content.type" />
+          <zeebe:input source="=outputEmail.body" target="content.value" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultVariable" value="outputEmailResponse" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_011xvn4</bpmn:incoming>
+      <bpmn:outgoing>Flow_0454m0o</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:textAnnotation id="TextAnnotation_0ovjj72">
+      <bpmn:text>3 categories:
+- Bug detected
+- How to use
+- Feature request</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="TextAnnotation_023tpb0">
+      <bpmn:text>read education.camunda.test@gmail.com emails</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0b0fnir" associationDirection="None" sourceRef="StartEvent_1" targetRef="TextAnnotation_023tpb0" />
+    <bpmn:group id="Group_0w52yo0" />
+    <bpmn:textAnnotation id="TextAnnotation_1ka3p1p">
+      <bpmn:text>The main answer will be provided here</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_068816r" associationDirection="None" sourceRef="DataObjectReference_14663w1" targetRef="TextAnnotation_1ka3p1p" />
+    <bpmn:textAnnotation id="TextAnnotation_0oqrxtp">
+      <bpmn:text>Elastic search</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0cd6moh" associationDirection="None" sourceRef="Activity_0ddhnk3" targetRef="TextAnnotation_0oqrxtp" />
+    <bpmn:textAnnotation id="TextAnnotation_0t2tg71">
+      <bpmn:text>Camunda documentation</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1pv3v8f" associationDirection="None" sourceRef="Activity_071mdtw" targetRef="TextAnnotation_0t2tg71" />
+  </bpmn:process>
+  <bpmn:message id="Message_0doo8xv" name="9fb23590-2909-4b23-ba35-1ee6b6ed3ee0" zeebe:modelerTemplate="io.camunda.connectors.inbound.EmailMessageStart.v1" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Customer-support">
+      <bpmndi:BPMNShape id="Gateway_0q4lnzz_di" bpmnElement="Gateway_0q4lnzz" isMarkerVisible="true">
+        <dc:Bounds x="1635" y="195" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1617" y="171" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_15nketq_di" bpmnElement="Gateway_15nketq" isMarkerVisible="true">
+        <dc:Bounds x="495" y="195" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="479" y="171" width="82" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0cmzg54_di" bpmnElement="Gateway_0cmzg54" isMarkerVisible="true">
+        <dc:Bounds x="945" y="195" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_12s8zcl_di" bpmnElement="Activity_1w5j3om">
+        <dc:Bounds x="1720" y="290" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0608i2m_di" bpmnElement="Gateway_0608i2m" isMarkerVisible="true">
+        <dc:Bounds x="1865" y="195" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1iewxkg_di" bpmnElement="Activity_071mdtw" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="620" y="300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0roi690_di" bpmnElement="Activity_117qby0">
+        <dc:Bounds x="90" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_08v4q51_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="2" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_13onmyf_di" bpmnElement="DataObjectReference_13onmyf" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="312" y="-35" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="295" y="-85" width="70" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_0gupucw_di" bpmnElement="DataObjectReference_0gupucw" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="222" y="-35" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="218" y="22" width="45" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_0c1ydu0_di" bpmnElement="DataObjectReference_0c1ydu0" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="392" y="-35" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="376" y="22" width="69" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_14663w1_di" bpmnElement="DataObjectReference_14663w1" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="782" y="35" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="771" y="92" width="59" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_117wvmi_di" bpmnElement="Activity_0fkk3ur">
+        <dc:Bounds x="1510" y="180" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0nc4zmd" bpmnElement="Activity_1qqucqt">
+        <dc:Bounds x="290" y="180" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0gwcm5e" bpmnElement="DataObjectReference_1ga4cqi" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="472" y="-35" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="451" y="22" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0w0s1k4_di" bpmnElement="Activity_0ddhnk3" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="620" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0z1lyvv_di" bpmnElement="Activity_0myermz">
+        <dc:Bounds x="1050" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_122dom8_di" bpmnElement="Activity_0rnahsp">
+        <dc:Bounds x="620" y="430" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1fg7yln_di" bpmnElement="Activity_1r1wuwe">
+        <dc:Bounds x="800" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_10nbcmx_di" bpmnElement="Activity_0t84vqq">
+        <dc:Bounds x="1210" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1n1w9n8" bpmnElement="Activity_0o5mjtl">
+        <dc:Bounds x="620" y="540" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0rwvn9n" bpmnElement="Activity_1krn6ih">
+        <dc:Bounds x="1360" y="180" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_05vypwa_di" bpmnElement="sentAutomaticEmail">
+        <dc:Bounds x="1940" y="180" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0o3qbqt_di" bpmnElement="Event_0o3qbqt">
+        <dc:Bounds x="2142" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2134" y="245" width="52" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0ovjj72_di" bpmnElement="TextAnnotation_0ovjj72">
+        <dc:Bounds x="210" y="-130" width="108" height="70" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_023tpb0_di" bpmnElement="TextAnnotation_023tpb0">
+        <dc:Bounds x="-170" y="150" width="310" height="40" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Group_0w52yo0_di" bpmnElement="Group_0w52yo0">
+        <dc:Bounds x="570" y="140" width="170" height="510" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1ka3p1p_di" bpmnElement="TextAnnotation_1ka3p1p">
+        <dc:Bounds x="850" y="-50" width="100" height="55" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0oqrxtp_di" bpmnElement="TextAnnotation_0oqrxtp">
+        <dc:Bounds x="640" y="140" width="100" height="30" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0t2tg71_di" bpmnElement="TextAnnotation_0t2tg71">
+        <dc:Bounds x="740" y="290" width="100" height="41" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1qyk909_di" bpmnElement="Flow_1qyk909">
+        <di:waypoint x="1685" y="220" />
+        <di:waypoint x="1865" y="220" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1766" y="202" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vxruo1_di" bpmnElement="Flow_0vxruo1">
+        <di:waypoint x="545" y="220" />
+        <di:waypoint x="620" y="220" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="574" y="202" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13sfc4b_di" bpmnElement="Flow_13sfc4b">
+        <di:waypoint x="720" y="220" />
+        <di:waypoint x="800" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04v46oe_di" bpmnElement="Flow_04v46oe">
+        <di:waypoint x="520" y="245" />
+        <di:waypoint x="520" y="340" />
+        <di:waypoint x="620" y="340" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="555" y="323" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qmd6pm_di" bpmnElement="Flow_0qmd6pm">
+        <di:waypoint x="1660" y="245" />
+        <di:waypoint x="1660" y="330" />
+        <di:waypoint x="1720" y="330" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1669" y="285" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1g2kohl_di" bpmnElement="Flow_1g2kohl">
+        <di:waypoint x="1820" y="330" />
+        <di:waypoint x="1890" y="330" />
+        <di:waypoint x="1890" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_011xvn4_di" bpmnElement="Flow_011xvn4">
+        <di:waypoint x="1915" y="220" />
+        <di:waypoint x="1940" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0454m0o_di" bpmnElement="Flow_0454m0o">
+        <di:waypoint x="2040" y="220" />
+        <di:waypoint x="2142" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0aicg5q_di" bpmnElement="Flow_0aicg5q">
+        <di:waypoint x="720" y="340" />
+        <di:waypoint x="970" y="340" />
+        <di:waypoint x="970" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1q5uyqg_di" bpmnElement="Flow_1q5uyqg">
+        <di:waypoint x="520" y="245" />
+        <di:waypoint x="520" y="470" />
+        <di:waypoint x="620" y="470" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="568" y="443" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ydivp2_di" bpmnElement="Flow_0ydivp2">
+        <di:waypoint x="720" y="470" />
+        <di:waypoint x="970" y="470" />
+        <di:waypoint x="970" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1m831ox_di" bpmnElement="Flow_1m831ox">
+        <di:waypoint x="520" y="245" />
+        <di:waypoint x="520" y="580" />
+        <di:waypoint x="620" y="580" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="533.9999999999999" y="553" width="39" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0fj7ab9_di" bpmnElement="Flow_0fj7ab9">
+        <di:waypoint x="38" y="220" />
+        <di:waypoint x="90" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_0m9dssp_di" bpmnElement="DataOutputAssociation_0m9dssp">
+        <di:waypoint x="322" y="180" />
+        <di:waypoint x="248" y="15" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_0384wys_di" bpmnElement="DataOutputAssociation_0384wys">
+        <di:waypoint x="339" y="180" />
+        <di:waypoint x="334" y="15" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_1r77jnm_di" bpmnElement="DataOutputAssociation_1r77jnm">
+        <di:waypoint x="353" y="180" />
+        <di:waypoint x="407" y="15" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_1iaye7b_di" bpmnElement="DataOutputAssociation_1iaye7b">
+        <di:waypoint x="367" y="180" />
+        <di:waypoint x="478" y="15" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0r4uvwd_di" bpmnElement="Flow_0r4uvwd">
+        <di:waypoint x="190" y="220" />
+        <di:waypoint x="290" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1l09vth_di" bpmnElement="Flow_1l09vth">
+        <di:waypoint x="390" y="220" />
+        <di:waypoint x="495" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_17h4kwz_di" bpmnElement="Flow_17h4kwz">
+        <di:waypoint x="995" y="220" />
+        <di:waypoint x="1050" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1cahe6c_di" bpmnElement="Flow_1cahe6c">
+        <di:waypoint x="1150" y="220" />
+        <di:waypoint x="1210" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0b7kase_di" bpmnElement="Flow_0b7kase">
+        <di:waypoint x="1310" y="220" />
+        <di:waypoint x="1360" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0nic38r_di" bpmnElement="Flow_0nic38r">
+        <di:waypoint x="900" y="220" />
+        <di:waypoint x="945" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0uqcu6w_di" bpmnElement="Flow_0uqcu6w">
+        <di:waypoint x="720" y="580" />
+        <di:waypoint x="970" y="580" />
+        <di:waypoint x="970" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1pk5vvq_di" bpmnElement="Flow_1pk5vvq">
+        <di:waypoint x="1610" y="220" />
+        <di:waypoint x="1635" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0j77kbi_di" bpmnElement="Flow_0j77kbi">
+        <di:waypoint x="1460" y="220" />
+        <di:waypoint x="1510" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0b0fnir_di" bpmnElement="Association_0b0fnir">
+        <di:waypoint x="33" y="208" />
+        <di:waypoint x="54" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_068816r_di" bpmnElement="Association_068816r">
+        <di:waypoint x="818" y="44" />
+        <di:waypoint x="863" y="5" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0cd6moh_di" bpmnElement="Association_0cd6moh">
+        <di:waypoint x="682" y="180" />
+        <di:waypoint x="685" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1pv3v8f_di" bpmnElement="Association_1pv3v8f">
+        <di:waypoint x="720" y="325" />
+        <di:waypoint x="740" y="320" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
